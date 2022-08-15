@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+        <p:growl id="growl" life="3000" />
+        
+        <h:form id="storeCreateForm" >
+            <p:panelGrid columns="2">
+                <p:outputLabel value="Responsavel pelo estabelecimento "/>
+                <p:inputText value="#{vendorController.selected.vendorName}"/>
+
+                <p:outputLabel value="Nome do estabelecimento"/>
+                <p:inputText value="#{vendorController.selected.storeName}"/>
+
+                <p:outputLabel value="Especialidade"/>
+                <p:inputText value="#{vendorController.selected.segment}"/>
+
+                <p:outputLabel value="Endereço" />
+                <p:inputText value="#{vendorController.selected.address}" />
+
+            </p:panelGrid>
+            <h:commandButton value="Salvar" action="#{vendorController.update()}"/>
+        </h:form>
+        <h:form id="form">
+            <p:dataView var="product" value="#{vendorController.selected.products}">            
+                <p:dataViewListItem>
+                    
+                    <div style="margin: 20px 10px 30px;">
+                        <div style="display: inline-block;">
+                            <p:commandLink >
+                                <p:graphicImage value="images/imagemteste.png" style="width: 100px;"/>
+                            </p:commandLink>
+                        </div>
+
+                        <div style="display: inline-block; ">
+                            <div>#{product.name}</div>
+                            <div>#{product.description}</div>
+                        </div>
+
+                        <div style="display: inline-block; position: absolute; right: 50px;">
+                            <h:outputText value="#{product.price}" styleClass="product-price">
+                                <f:convertNumber currencySymbol="$" type="currency"/>
+                            </h:outputText>
+                            <p:commandButton style="display: block; width: 96px" value="Editar" actionListener="#{productController.setSelected(product)}"
+                                             oncomplete="PF('EditDialog').show()" update=":EditForm"></p:commandButton>
+                            <p:commandButton value="Excluir" 
+                                             actionListener="#{productController.destroy(product)}" update="form">
+                            </p:commandButton>
+                            <span style="display: block;">#{product.stringStock()}</span>
+                        </div>
+                    </div>
+                </p:dataViewListItem>
+                <f:facet name="footer">
+                    <p:commandButton value="Adicionar Produto" icon="ui-icon-plus" oncomplete="PF('CreateDialog').show()" update=":CreateForm                                                                     "/>
+                </f:facet>
+            </p:dataView>
+        </h:form>
+        
+        <p:dialog widgetVar="CreateDialog" modal="true" resizable="false" rendered="#{productController.selected != null}"
+                  appendTo="@(body)" header="Adicionar Produto">
+            <h:form id="CreateForm">
+                <h:panelGroup id="displayCreate">
+                    <p:panelGrid columns="2">
+                        <p:outputLabel value="Nome" for="name" />
+                        <p:inputText id="name" value="#{productController.selected.name}" title="Nome" required="true" requiredMessage="Nome Obrigatório"/>
+
+                        <p:outputLabel value="Descrição" for="description" />
+                        <p:inputText id="description" value="#{productController.selected.description}" title="Descrição" required="true" requiredMessage="Descrição Obrigatório"/>
+
+                        <p:outputLabel value="Preco" for="price" />
+                        <p:inputText id="price" value="#{productController.selected.price}" title="Preço" required="true" requiredMessage="Preço Obrigatório"/>
+                    </p:panelGrid>
+                    
+                    <p:commandButton actionListener="#{productController.create}" update="form, displayCreate, growl"
+                                     value="Adicionar Produto" />
+                    <p:commandButton value="Cancelar" onclick="CreateDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+        <p:dialog widgetVar="EditDialog" modal="true" resizable="false" appendTo="@(body)" header="Alterar Produto">
+            <h:form id="EditForm">
+                <h:panelGroup id="displayEdit">
+                    <p:panelGrid columns="2" rendered="#{productController.selected != null}">
+
+                        <p:outputLabel value="Nome" for="nameE" />
+                        <p:inputText id="nameE" value="#{productController.selected.name}" title="Nome" required="true" requiredMessage="Nome Obrigatório"/>
+
+                        <p:outputLabel value="Descrição" for="descriptionE" />
+                        <p:inputText id="descriptionE" value="#{productController.selected.description}" title="Descrição" required="true" requiredMessage="Descrição Obrigatório"/>
+
+                        <p:outputLabel value="Preço" for="priceE" />
+                        <p:inputText id="priceE" value="#{productController.selected.price}" title="Preço" required="true" requiredMessage="Preço Obrigatório"/>
+                        
+                        <p:selectBooleanCheckbox value="#{productController.selected.in_stock}" itemLabel="Disponivel"/>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{productController.update}" value="Salvar" 
+                                     update="form, displayEdit, growl" oncomplete="handleSubmit(args, 'EditDialog')" onclick="EditDialog.hide()"/>
+                    <p:commandButton value="Cancelar" onclick="EditDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+        <style>
+    
+        </style>  
+    </h:body>
+</html>
+
