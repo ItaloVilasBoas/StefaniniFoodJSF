@@ -3,7 +3,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:of="http://omnifaces.org/functions">
     <h:head>
         <title>Facelet Title</title>
     </h:head>
@@ -27,15 +29,14 @@
             </p:panelGrid>
             <h:commandButton value="Salvar" action="#{vendorController.update()}"/>
         </h:form>
+        
         <h:form id="form">
             <p:dataView var="product" value="#{vendorController.selected.products}">            
                 <p:dataViewListItem>
-                    
                     <div style="margin: 20px 10px 30px;">
                         <div style="display: inline-block;">
-                            <p:commandLink >
-                                <p:graphicImage value="images/imagemteste.png" style="width: 100px;"/>
-                            </p:commandLink>
+                            <p:graphicImage value="images/imagemteste.png" rendered="#{product.image == null}" style="width: 100px;"/>
+                            <o:graphicImage value="#{imageController.getImage(product.id)}" style="width: 150px;"/>
                         </div>
 
                         <div style="display: inline-block; ">
@@ -47,26 +48,29 @@
                             <h:outputText value="#{product.price}" styleClass="product-price">
                                 <f:convertNumber currencySymbol="$" type="currency"/>
                             </h:outputText>
-                            <p:commandButton style="display: block; width: 96px" value="Editar" actionListener="#{productController.setSelected(product)}"
-                                             oncomplete="PF('EditDialog').show()" update=":EditForm"></p:commandButton>
-                            <p:commandButton value="Excluir" 
-                                             actionListener="#{productController.destroy(product)}" update="form">
-                            </p:commandButton>
+                            
+                            <p:commandButton style="display: block; width: 96px" value="Editar" update=":EditForm" actionListener="#{productController.setSelected(product)}" oncomplete="PF('EditDialog').show()"/>
+                            
+                            <p:commandButton value="Excluir" actionListener="#{productController.destroy(product)}" update="form, growl"/>
+                            
                             <span style="display: block;">#{product.stringStock()}</span>
                         </div>
                     </div>
                 </p:dataViewListItem>
                 <f:facet name="footer">
-                    <p:commandButton value="Adicionar Produto" icon="ui-icon-plus" oncomplete="PF('CreateDialog').show()" update=":CreateForm                                                                     "/>
+                    <p:commandButton icon="ui-icon-plus" value="Adicionar Produto" actionListener="#{productController.prepareCreate}" update=":CreateForm" oncomplete="PF('CreateDialog').show()" />
                 </f:facet>
             </p:dataView>
         </h:form>
         
         <p:dialog widgetVar="CreateDialog" modal="true" resizable="false" rendered="#{productController.selected != null}"
                   appendTo="@(body)" header="Adicionar Produto">
-            <h:form id="CreateForm">
+            <h:form id="CreateForm" enctype="multipart/form-data">
                 <h:panelGroup id="displayCreate">
                     <p:panelGrid columns="2">
+                        <p:outputLabel value="Imagem"/>
+                        <p:fileUpload fileUploadListener="#{productController.handleFileUpload}" auto="true" update="growl"/>
+                        
                         <p:outputLabel value="Nome" for="name" />
                         <p:inputText id="name" value="#{productController.selected.name}" title="Nome" required="true" requiredMessage="Nome Obrigatório"/>
 
@@ -77,16 +81,19 @@
                         <p:inputText id="price" value="#{productController.selected.price}" title="Preço" required="true" requiredMessage="Preço Obrigatório"/>
                     </p:panelGrid>
                     
-                    <p:commandButton actionListener="#{productController.create}" update="form, displayCreate, growl"
-                                     value="Adicionar Produto" />
+                    <p:commandButton actionListener="#{productController.addInList}" value="Adicionar Produto" update="form, displayCreate, growl" oncomplete="PF('CreateDialog').hide();"/>
                     <p:commandButton value="Cancelar" onclick="CreateDialog.hide()"/>
                 </h:panelGroup>
             </h:form>
         </p:dialog>
+        
         <p:dialog widgetVar="EditDialog" modal="true" resizable="false" appendTo="@(body)" header="Alterar Produto">
             <h:form id="EditForm">
                 <h:panelGroup id="displayEdit">
                     <p:panelGrid columns="2" rendered="#{productController.selected != null}">
+                        <p:outputLabel value="Imagem"/>
+                        <p:fileUpload fileUploadListener="#{productController.handleFileUpload}" auto="true" update="growl"/>
+                        
 
                         <p:outputLabel value="Nome" for="nameE" />
                         <p:inputText id="nameE" value="#{productController.selected.name}" title="Nome" required="true" requiredMessage="Nome Obrigatório"/>
@@ -99,15 +106,11 @@
                         
                         <p:selectBooleanCheckbox value="#{productController.selected.in_stock}" itemLabel="Disponivel"/>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{productController.update}" value="Salvar" 
-                                     update="form, displayEdit, growl" oncomplete="handleSubmit(args, 'EditDialog')" onclick="EditDialog.hide()"/>
+                    <p:commandButton actionListener="#{productController.update}" value="Salvar" update="form, displayEdit, growl" oncomplete="PF('EditDialog').hide();"/>
                     <p:commandButton value="Cancelar" onclick="EditDialog.hide()"/>
                 </h:panelGroup>
             </h:form>
         </p:dialog>
-        <style>
-    
-        </style>  
     </h:body>
 </html>
 

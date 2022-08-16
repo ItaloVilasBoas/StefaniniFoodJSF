@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -42,6 +43,10 @@ public class Product implements Serializable{
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "product_id")
     private Long id;
+    
+    @Lob
+    @Column(name = "Image", length = Integer.MAX_VALUE, nullable = true)
+    private byte[] image;
     
     @Basic(optional = false)
     @NotNull
@@ -98,6 +103,14 @@ public class Product implements Serializable{
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 
     public boolean isIn_stock() {

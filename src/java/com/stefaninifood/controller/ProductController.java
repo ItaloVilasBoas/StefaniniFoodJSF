@@ -13,6 +13,8 @@ import javax.el.ELContext;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
 
 /**
  *
@@ -72,9 +74,19 @@ public class ProductController implements Serializable{
         vController.update();
     }
     
+    public void handleFileUpload(FileUploadEvent event){
+        selected.setImage(null);
+        try{
+            UploadedFile uf = event.getFile();
+            selected.setImage(uf.getContents());
+            JsfUtil.addSuccessMessage("Imagem carregada!");
+        }catch(Exception e){
+        }
+    }
+    
     public void create() {
         addInList();
-        persist(JsfUtil.PersistAction.CREATE, "Produto Criado com sucesso!");
+        persist(JsfUtil.PersistAction.CREATE, "Conta criada com sucesso!");
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
         }
@@ -84,6 +96,7 @@ public class ProductController implements Serializable{
     public void update() {
         persist(JsfUtil.PersistAction.UPDATE, "Produto Atualizado com sucesso!");
     }
+    
     public void destroy(Product p) {
         selected = p;
         removeFromList();

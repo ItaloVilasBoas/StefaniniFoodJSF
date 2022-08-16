@@ -51,7 +51,7 @@ public class VendorAccount extends Account{
     
     @OneToMany(mappedBy = "vendor")
     private List<Product> products;
-
+    
     
     public VendorAccount() {
     }
