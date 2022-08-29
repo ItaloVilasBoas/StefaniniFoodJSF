@@ -25,7 +25,9 @@
 
                 <p:outputLabel value="Endereço" />
                 <p:inputText value="#{vendorController.selected.address}" />
-
+                
+                <p:outputLabel value="Taxa de entrega desta loja" for="shippingTax" />
+                <p:inputText id="shippingTax" value="#{vendorController.selected.shippingTax}" required="true" requiredMessage="Campo Obrigatório"/>
             </p:panelGrid>
             <h:commandButton value="Salvar" action="#{vendorController.update()}"/>
         </h:form>
@@ -36,7 +38,8 @@
                     <div style="margin: 20px 10px 30px;">
                         <div style="display: inline-block;">
                             <p:graphicImage value="images/imagemteste.png" rendered="#{product.image == null}" style="width: 100px;"/>
-                            <o:graphicImage value="#{imageController.getImage(product.id)}" style="width: 150px;"/>
+                            <!-- <o:graphicImage value="sharp{imageController.getImage(product.id)}" /> -->
+                            <img src="http://localhost:8082/StefaniniFood/product/image/#{product.id}" alt="#" style="width: 150px;" rendered="#{product.image != null}"></img>
                         </div>
 
                         <div style="display: inline-block; ">
@@ -81,7 +84,7 @@
                         <p:inputText id="price" value="#{productController.selected.price}" title="Preço" required="true" requiredMessage="Preço Obrigatório"/>
                     </p:panelGrid>
                     
-                    <p:commandButton actionListener="#{productController.addInList}" value="Adicionar Produto" update="form, displayCreate, growl" oncomplete="PF('CreateDialog').hide();"/>
+                    <p:commandButton actionListener="#{productController.create}" value="Adicionar Produto" update="form, displayCreate, growl" oncomplete="PF('CreateDialog').hide();"/>
                     <p:commandButton value="Cancelar" onclick="CreateDialog.hide()"/>
                 </h:panelGroup>
             </h:form>

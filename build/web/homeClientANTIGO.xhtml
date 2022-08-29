@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:of="http://omnifaces.org/functions">
+    <h:head>
+        <title>Tela Inicial</title>
+        <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
+        <link href='https://fonts.googleapis.com/css?family=Montserrat|Ubuntu' rel='stylesheet' type='text/css'/>
+    </h:head>
+    <h:body style="font-family: 'Montserrat'; text-align: center;">
+        <p:growl id="growl" life="3000" />
+        
+        <!-- MENU -->
+        <h:form>
+            <p:menubar class="menu">
+                <p:menuitem class="title">
+                    stefood
+                </p:menuitem>
+                <p:menuitem>
+                    <p:commandLink oncomplete="PF('ListCartDialog').show()" update=":ListForm">
+                        <i class="pi pi-shopping-cart" style="font-size: 2rem"></i>
+                    </p:commandLink>   
+                </p:menuitem>
+            </p:menubar>
+        </h:form>
+        
+        <!-- LISTA DE LOJAS -->
+        <h:form id="form">
+            <p:dataView var="item" value="#{vendorController.items}" layout="grid" >
+                <p:dataViewGridItem>
+                    <p:commandLink actionListener="#{vendorController.prepareCreate(item)}" oncomplete="PF('ListStoreDialog').show()" update=":ListForm">
+                        <p:graphicImage value="images/imagemteste.png" style="width: 40px;"/>
+                    </p:commandLink>                              
+                    <div class="name">#{item.storeName}</div>
+                    <div class="description">#{item.address}</div>
+                </p:dataViewGridItem>
+            </p:dataView>
+        </h:form>
+        
+        <!-- LISTA DE PRODUTOS DA LOJA SELECIONADA -->
+        <p:dialog widgetVar="ListStoreDialog" modal="true" resizable="false" appendTo="@(body)" header="Produtos">
+                <h:form id="ListForm">
+                    <p:dataGrid var="product" value="#{vendorController.selected.products}" columns="3" layout="grid">
+                        <div style="margin-bottom: 0">
+                            <div class="content">
+                                <o:graphicImage value="#{imageController.getImage(product.id)}" style="width: 125px;"/>
+                                <div class="name">#{product.name}</div>
+                                <div class="description">#{product.description}</div>
+                            </div>
+                            <div>
+                                <h:outputText value="#{product.price}">
+                                    <f:convertNumber currencySymbol="$" type="currency"/>
+                                </h:outputText>
+                                <p:commandButton value="Adcionar Carrinho" icon="pi pi-shopping-cart" 
+                                    actionListener="#{orderController.addOrder(product)}" update="growl, :cartForm"
+                                    disabled="#{product.in_stock == false}" >
+                                </p:commandButton>
+                            </div>
+                        </div>
+                    </p:dataGrid>
+                </h:form>
+        </p:dialog> 
+        <!-- CARRINHO DE COMPRAS -->
+        <p:dialog widgetVar="ListCartDialog" modal="true" resizable="false" appendTo="@(body)" header="Carrinho">
+            <h:form id="cartForm">
+                <p:dataView value="#{clientController.selected.shoppingCart}" var="order" rendered="#{clientController.selected.shoppingCart != null}">
+                    <p:dataViewListItem>
+                        <div class="name">#{order.product.name}</div>
+                        <div class="description">#{order.product.description}</div>
+                        <div >#{order.product.price}</div>
+                    </p:dataViewListItem>
+                </p:dataView>
+            </h:form>
+        </p:dialog>
+        <style>
+            .menu{
+                background-color: #FF5B00; 
+                border: 0; 
+                padding: 0 10%
+            }
+            .content {
+                text-align: center;
+                padding: 10% 20% 0;
+            }
+            .title{
+                color:#fff;
+                font-family: 'Montserrat'; 
+            }
+            .name {
+                font-size: 1rem;
+                font-weight: 700;
+            }
+            .description {
+                margin: 0 0 1rem 0;
+            }
+            .myTable thead th { 
+                border: none !important; 
+                background: none !important; 
+            }
+            .ui-dataview .ui-dataview-header {
+                border-bottom: 0 none;
+                display: none;
+            }
+        </style>
+    </h:body>
+</html>
+

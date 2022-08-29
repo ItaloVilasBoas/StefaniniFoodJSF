@@ -6,6 +6,7 @@ import com.stefaninifood.dao.Orders;
 
 import controller.util.JsfUtil;
 import controller.util.JsfUtil.PersistAction;
+import java.io.IOException;
 
 import java.io.Serializable;
 import java.util.List;
@@ -16,6 +17,8 @@ import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 
 /**
  *
@@ -145,5 +148,10 @@ public class ClientController implements Serializable {
             }
         }
         return true;
+    }
+    public void redirectToCart() throws IOException{
+        String link = "http://localhost:8082/StefaniniFood/cart/" + selected.getEmail().hashCode();
+        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        externalContext.redirect(link);
     }
 }

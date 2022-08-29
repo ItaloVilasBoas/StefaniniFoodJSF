@@ -1,8 +1,8 @@
 package com.stefaninifood.dao;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,7 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -25,57 +24,75 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Orders.findAll", 
             query = "SELECT o FROM Orders o"),
     @NamedQuery(name = "Orders.findById", 
-            query = "SELECT o FROM Orders o WHERE o.id = :order_id"),
-    @NamedQuery(name = "Orders.findByPrice", 
-            query = "SELECT o FROM Orders o WHERE o.price = :price")
+            query = "SELECT o FROM Orders o WHERE o.id = :order_id")
 })
 public class Orders implements Serializable{
     private static final long serialVersionUID = 1L;
     
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "order_id")
     private Long id;
-    
-    @Basic(optional = false)
-    @NotNull
-    private double price;
     
     @ManyToOne
     @JoinColumn(name="client_id", nullable=false)
     private ClientAccount client;
 
     @ManyToOne
+    @JoinColumn(name="product_id", nullable=false)
     private Product product;
+    
+    @Column(name = "order_data")
+    private Date data;
 
+    @Column(nullable = false)
+    private String paymentMethod;
+
+    @Column(name = "total_price")
+    private double total;
+    
     public Orders(){
-        
     }
-    public Orders(Long id, double price, ClientAccount client, Product product) {
+
+    public Orders(Long id, ClientAccount client, Product product, Date data, String paymentMethod, double shippingTax) {
         this.id = id;
-        this.price = price;
         this.client = client;
         this.product = product;
+        this.data = data;
+        this.paymentMethod = paymentMethod;
+        this.total = shippingTax;
     }
-    public Orders(double price, ClientAccount client, Product product) {
-            this.price = price;
-            this.client = client;
-            this.product = product;
-        }
+        
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
+
+    public Date getData() {
+        return data;
+    }
+
+    public void setData(Date data) {
+        this.data = data;
+    }
+    
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
     }
 
     public ClientAccount getClient() {

@@ -69,7 +69,6 @@ public class OrderController implements Serializable {
     public void addOrder(Product product){
         ELContext elContext = FacesContext.getCurrentInstance().getELContext();
         ClientController cController = (ClientController) elContext.getELResolver().getValue(elContext, null, "clientController");
-        selected.setPrice(product.getPrice());
         selected.setClient(cController.getSelected());
         selected.setProduct(product);
         cController.updateCart(selected);

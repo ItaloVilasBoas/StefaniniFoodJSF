@@ -1,12 +1,17 @@
 package com.stefaninifood.controller;
 
 import com.stefaninifood.bean.VendorFacade;
+import com.stefaninifood.controller.util.Slug;
+import com.stefaninifood.dao.ClientAccount;
 import com.stefaninifood.dao.VendorAccount;
 import controller.util.JsfUtil;
 import controller.util.JsfUtil.PersistAction;
+import java.io.IOException;
 
 import java.io.Serializable;
+import java.text.Normalizer;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -14,6 +19,8 @@ import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 
 /**
  *
@@ -69,6 +76,7 @@ public class VendorController implements Serializable {
         return selected;
     }
     public void create() {
+        selected.setSlug(Slug.toSlug(selected.getStoreName()));
         if(!validaEmail() && !validaStoreName())
             return;
         persist(PersistAction.CREATE, "Conta criada com sucesso!");
@@ -147,11 +155,17 @@ public class VendorController implements Serializable {
         if(items == null)
             return true;
         for(VendorAccount v : items){
-            if(v.getStoreName().equals(selected.getStoreName())){
+            if(v.getSlug().equals(selected.getSlug())){
                 JsfUtil.addErrorMessage("Ja existe um restaurante com esse nome no stefood!");
                 return false;
             }
         }
         return true;
+    }
+
+    public void redirectToStore(VendorAccount store, ClientAccount client) throws IOException{
+        String link = "http://localhost:8082/StefaniniFood/" + Slug.toSlug(store.getStoreName()) + "/" + client.getEmail().hashCode();
+        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        externalContext.redirect(link);
     }
 }

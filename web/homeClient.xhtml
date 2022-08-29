@@ -22,7 +22,7 @@
                     stefood
                 </p:menuitem>
                 <p:menuitem>
-                    <p:commandLink oncomplete="PF('ListCartDialog').show()" update=":ListForm">
+                    <p:commandLink action="#{clientController.redirectToCart}">
                         <i class="pi pi-shopping-cart" style="font-size: 2rem"></i>
                     </p:commandLink>   
                 </p:menuitem>
@@ -31,52 +31,16 @@
         
         <!-- LISTA DE LOJAS -->
         <h:form id="form">
-            <p:dataView var="item" value="#{vendorController.items}" layout="grid" >
+            <p:dataView var="store" value="#{vendorController.items}" layout="grid" >
                 <p:dataViewGridItem>
-                    <p:commandLink actionListener="#{vendorController.prepareCreate(item)}" oncomplete="PF('ListStoreDialog').show()" update=":ListForm">
+                    <p:commandLink action="#{vendorController.redirectToStore(store, clientController.selected)}">
                         <p:graphicImage value="images/imagemteste.png" style="width: 40px;"/>
                     </p:commandLink>                              
-                    <div class="name">#{item.storeName}</div>
-                    <div class="description">#{item.address}</div>
+                    <div class="name">#{store.storeName}</div>
+                    <div class="description">#{store.address}</div>
                 </p:dataViewGridItem>
             </p:dataView>
-        </h:form>
-        
-        <!-- LISTA DE PRODUTOS DA LOJA SELECIONADA -->
-        <p:dialog widgetVar="ListStoreDialog" modal="true" resizable="false" appendTo="@(body)" header="Produtos">
-                <h:form id="ListForm">
-                    <p:dataGrid var="product" value="#{vendorController.selected.products}" columns="3" layout="grid">
-                        <div style="margin-bottom: 0">
-                            <div class="content">
-                                <o:graphicImage value="#{imageController.getImage(product.id)}" style="width: 125px;"/>
-                                <div class="name">#{product.name}</div>
-                                <div class="description">#{product.description}</div>
-                            </div>
-                            <div>
-                                <h:outputText value="#{product.price}">
-                                    <f:convertNumber currencySymbol="$" type="currency"/>
-                                </h:outputText>
-                                <p:commandButton value="Adcionar Carrinho" icon="pi pi-shopping-cart" 
-                                    actionListener="#{orderController.addOrder(product)}" update="growl, :cartForm"
-                                    disabled="#{product.in_stock == false}" >
-                                </p:commandButton>
-                            </div>
-                        </div>
-                    </p:dataGrid>
-                </h:form>
-        </p:dialog> 
-        <!-- CARRINHO DE COMPRAS -->
-        <p:dialog widgetVar="ListCartDialog" modal="true" resizable="false" appendTo="@(body)" header="Carrinho">
-            <h:form id="cartForm">
-                <p:dataView value="#{clientController.selected.shoppingCart}" var="order" rendered="#{clientController.selected.shoppingCart != null}">
-                    <p:dataViewListItem>
-                        <div class="name">#{order.product.name}</div>
-                        <div class="description">#{order.product.description}</div>
-                        <div >#{order.product.price}</div>
-                    </p:dataViewListItem>
-                </p:dataView>
-            </h:form>
-        </p:dialog>
+        </h:form>        
         <style>
             .menu{
                 background-color: #FF5B00; 

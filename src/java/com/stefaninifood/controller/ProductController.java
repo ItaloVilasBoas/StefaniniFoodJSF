@@ -4,6 +4,7 @@ import com.stefaninifood.bean.ProductFacade;
 import com.stefaninifood.dao.Product;
 import controller.util.JsfUtil;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,14 +60,6 @@ public class ProductController implements Serializable{
         selected = new Product();
         return selected;
     }
-    public void addInList(){
-        ELContext elContext = FacesContext.getCurrentInstance().getELContext();
-        VendorController vController = (VendorController) elContext.getELResolver().getValue(elContext, null, "vendorController");
-        selected.setVendor(vController.getSelected());
-        selected.setIn_stock(true);
-        vController.getSelected().getProducts().add(selected);
-        vController.update();
-    }
     public void removeFromList(){
         ELContext elContext = FacesContext.getCurrentInstance().getELContext();
         VendorController vController = (VendorController) elContext.getELResolver().getValue(elContext, null, "vendorController");
@@ -85,8 +78,12 @@ public class ProductController implements Serializable{
     }
     
     public void create() {
-        addInList();
-        persist(JsfUtil.PersistAction.CREATE, "Conta criada com sucesso!");
+        ELContext elContext = FacesContext.getCurrentInstance().getELContext();
+        VendorController vController = (VendorController) elContext.getELResolver().getValue(elContext, null, "vendorController");
+        selected.setVendor(vController.getSelected());
+        selected.setIn_stock(true);
+        vController.getSelected().getProducts().add(selected);
+        vController.update();
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
         }

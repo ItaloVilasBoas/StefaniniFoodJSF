@@ -52,6 +52,11 @@ public class VendorAccount extends Account{
     @OneToMany(mappedBy = "vendor")
     private List<Product> products;
     
+    @Column(nullable = false)
+    private String slug;
+    
+    @Column(name="shipping_tax", nullable = false)
+    private Double shippingTax;
     
     public VendorAccount() {
     }
@@ -62,6 +67,22 @@ public class VendorAccount extends Account{
 
     public String getStoreName() {
         return storeName;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public Double getShippingTax() {
+        return shippingTax;
+    }
+
+    public void setShippingTax(Double shippingTax) {
+        this.shippingTax = shippingTax;
     }
 
     public void setStoreName(String storeName) {

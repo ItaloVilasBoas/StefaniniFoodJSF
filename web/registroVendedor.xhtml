@@ -35,6 +35,9 @@
                 <p:outputLabel value="Endereço" for="address" />
                 <p:inputText id="address" value="#{vendorController.selected.address}" required="true" requiredMessage="Campo Obrigatório"/>
 
+                <p:outputLabel value="Taxa de entrega desta loja" for="shippingTax" />
+                <p:inputText id="shippingTax" value="#{vendorController.selected.shippingTax}" required="true" requiredMessage="Campo Obrigatório"/>
+                
             </p:panelGrid>
             <h:commandButton value="Criar Conta" action="#{vendorController.create()}"/>
             <h:button value="Voltar" outcome ="login"/>
